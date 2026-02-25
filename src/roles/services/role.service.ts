@@ -1,25 +1,14 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { RoleNames, RoleNamesObj } from '../constants/role.constants';
+import { Injectable } from '@nestjs/common';
+import { Roles, RoleNames } from '../constants/role.constants';
 import { RoleRepository } from '../repositories/role.repository';
 
 @Injectable()
-export class RoleService implements OnModuleInit {
+export class RoleService {
   constructor(private readonly roleRepo: RoleRepository) {}
-
-  private roleNames: RoleNames[] = Object.values(RoleNamesObj);
 
   checkRole = (roleName: string) => (role: string) => role === roleName;
 
-  checkAdminRole = this.checkRole(RoleNamesObj.ADMIN);
-
-  async onModuleInit() {
-    for (const roleName of this.roleNames) {
-      const roleExists = await this.getRoleByName(roleName);
-      if (!roleExists) {
-        await this.roleRepo.insert({ name: roleName });
-      }
-    }
-  }
+  checkAdminRole = this.checkRole(Roles.ADMIN);
 
   async getRoleByName(name: RoleNames) {
     return await this.roleRepo.findOne({ name });
