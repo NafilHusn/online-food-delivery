@@ -8,9 +8,10 @@ model User {
   profilePicture String?
   lastLoginAt    DateTime?
   deletedAt      DateTime?
-  roleId         String
   createdAt      DateTime  @default(now())
-  Role           Role      @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  Role         Role[]
+  userSessions UserSession[]
 
   @@index([email])
   @@index([phone])

@@ -7,6 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 import { Roles } from '../constants/role.constants';
+import { RequestWithUser } from '../../auth/types/request_with_user';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -19,18 +20,20 @@ export class RolesGuard implements CanActivate {
     ]);
 
     // If no roles are strictly required, allow access
-    if (!requiredRoles) {
+    if (!requiredRoles?.length) {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<RequestWithUser>();
     const user = request.user;
 
     if (!user) {
       throw new ForbiddenException('User is not authenticated');
     }
 
-    const hasRole = requiredRoles.includes(user.role);
+    const hasRole = requiredRoles.some((role) =>
+      user.Role.some((r) => r.name === (role as string)),
+    );
     if (!hasRole) {
       throw new ForbiddenException(
         'You do not have the required role to perform this action',

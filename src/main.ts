@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { setupSwagger } from '../utils/swagger/swagger.config';
 import { Logger } from '@nestjs/common';
+import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,8 +14,19 @@ async function bootstrap() {
   const port = configService.get<number>('PORT') || 3000;
   if (devMode) {
     setupSwagger(app, configService);
+  } else {
+    app.use(helmet());
   }
 
+  const corsOptions: CorsOptions = {
+    origin: '*',
+    methods: 'GET,POST',
+    allowedHeaders:
+      'Content-Type, Accept, Authorization, cache-control, x-refresh-token',
+    credentials: true,
+  };
+
+  app.enableCors(corsOptions);
   await app.listen(port);
 
   const url = await app.getUrl();

@@ -17,4 +17,8 @@ export class RoleService {
   async getRoleById(id: string) {
     return await this.roleRepo.findOne({ id });
   }
+
+  async getRoleByIds(ids: string[]) {
+    return await this.roleRepo.findMany({ id: { in: ids } });
+  }
 }

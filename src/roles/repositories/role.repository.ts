@@ -16,4 +16,10 @@ export class RoleRepository {
       where,
     });
   }
+
+  async findMany(where: Prisma.RoleWhereInput) {
+    return await this.dbService.role.findMany({
+      where,
+    });
+  }
 }

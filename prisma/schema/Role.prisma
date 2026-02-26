@@ -3,5 +3,7 @@ model Role {
     name      String   @unique
     createdAt DateTime @default(now())
     active    Boolean  @default(false)
-    Users     User[]
+
+    Users           User[]
+    rolePermissions RolePermission[]
 }

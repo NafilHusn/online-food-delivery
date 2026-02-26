@@ -1,0 +1,29 @@
+model Module {
+    id   String @id @default(uuid())
+    name String @unique
+
+    permissions     Permission[]
+    rolePermissions RolePermission[]
+}
+
+model Permission {
+    id       String @id @default(uuid())
+    key      String @unique
+    action   String
+    moduleId String
+
+    module          Module           @relation(fields: [moduleId], references: [id])
+    rolePermissions RolePermission[]
+}
+
+model RolePermission {
+    roleId       String
+    permissionId String
+
+    role       Role       @relation(fields: [roleId], references: [id])
+    permission Permission @relation(fields: [permissionId], references: [id])
+    module     Module?    @relation(fields: [moduleId], references: [id])
+    moduleId   String?
+
+    @@id([roleId, permissionId])
+}

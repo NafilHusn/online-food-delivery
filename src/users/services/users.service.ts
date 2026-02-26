@@ -2,13 +2,12 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
-  OnModuleInit,
 } from '@nestjs/common';
-import { Prisma, Role } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { RoleService } from 'src/roles/services/role.service';
 import { PasswordService } from 'utils/passwords.service';
 import { UserRepository } from '../repositories/user.repository';
-import { RoleNames, Roles } from 'src/roles/constants/role.constants';
+import { RoleNames } from 'src/roles/constants/role.constants';
 import { UserQueryBuilder } from '../query-builder/user.query-builder';
 
 @Injectable()
@@ -66,7 +65,7 @@ export class UserService {
   }
 
   async createAccount(
-    roleId: string,
+    roleIds: string[],
     email: string,
     password: string,
     phone?: string,
@@ -80,7 +79,7 @@ export class UserService {
       email,
       phone,
       name,
-      roleId,
+      Role: { connect: roleIds.map((roleId) => ({ id: roleId })) },
       password,
       profilePicture,
     };
