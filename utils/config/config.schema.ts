@@ -12,4 +12,8 @@ export const configValidationSchema = Joi.object({
   THROTTLING_REQUESTS_LIMIT: Joi.number().required(),
   FILE_LOGGING_ENABLED: Joi.bool().required(),
   DB_LOGGING_ENABLED: Joi.bool().required(),
+  CONTROLLER_CACHING_ENABLED: Joi.bool().required(),
+  CACHING_ENABLED: Joi.bool().required(),
+  REDIS_HOST: Joi.string().required(),
+  REDIS_PORT: Joi.number().required(),
 });

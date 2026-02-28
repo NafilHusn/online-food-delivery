@@ -16,6 +16,7 @@ import { RoleNames } from 'src/roles/constants/role.constants';
 import { RequestWithUser } from '../types/request_with_user';
 import { RolesGuard } from '../../roles/guards/roles.guard';
 import { Role } from '../../roles/decorators/roles.decorator';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Injectable()
 class AuthGuard implements CanActivate {
@@ -55,7 +56,10 @@ class AuthGuard implements CanActivate {
   }
 }
 
-/** default rolesNames will be ['ADMIN'] */
 export function ProtectRoute(roleNames: RoleNames[] = []) {
-  return applyDecorators(UseGuards(AuthGuard, RolesGuard), Role(...roleNames));
+  return applyDecorators(
+    UseGuards(AuthGuard, RolesGuard),
+    ApiBearerAuth(),
+    Role(...roleNames),
+  );
 }

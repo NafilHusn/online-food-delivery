@@ -28,5 +28,6 @@ export function setupSwagger(
       docExpansion: 'none',
       filter: true,
     },
+    customJs: '/swagger-assets/custom.js',
   });
 }
