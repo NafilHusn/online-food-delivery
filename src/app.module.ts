@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { RestaurantModule } from './restaurant/restaurant.module';
 import { DatabaseModule } from 'utils/db/db.module';
 import { RoleModule } from './roles/role.module';
 import { ConfigModule } from '@nestjs/config';
@@ -24,6 +25,7 @@ import { SharedCacheModule } from '../utils/cache/cache.module';
     AuthModule,
     SessionModule,
     PermissionModule,
+    RestaurantModule,
   ],
 })
 export class AppModule {}

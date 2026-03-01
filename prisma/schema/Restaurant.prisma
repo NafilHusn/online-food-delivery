@@ -1,0 +1,10 @@
+model Restaurant {
+    id        String   @id @default(uuid())
+    name      String
+    country   String
+    active    Boolean  @default(true)
+
+    deletedAt DateTime?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}

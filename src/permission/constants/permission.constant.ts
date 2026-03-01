@@ -26,4 +26,34 @@ export const CURRENT_PERMISSIONS = [
       },
     ],
   },
+  {
+    module: 'Restaurant',
+    permissions: [
+      {
+        key: 'restaurant:create',
+        action: 'CREATE',
+        assignedRoles: [Roles.ADMIN, Roles.SUPER_ADMIN],
+      },
+      {
+        key: 'restaurant:read',
+        action: 'READ',
+        assignedRoles: [
+          Roles.ADMIN,
+          Roles.SUPER_ADMIN,
+          Roles.MANAGER,
+          Roles.MEMBER,
+        ],
+      },
+      {
+        key: 'restaurant:update',
+        action: 'UPDATE',
+        assignedRoles: [Roles.ADMIN, Roles.SUPER_ADMIN],
+      },
+      {
+        key: 'restaurant:delete',
+        action: 'DELETE',
+        assignedRoles: [Roles.ADMIN, Roles.SUPER_ADMIN],
+      },
+    ],
+  },
 ];

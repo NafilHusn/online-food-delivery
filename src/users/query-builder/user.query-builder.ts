@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { CreateUserDto, GetUsersParamsDto } from '../dto/user.dto';
 import { PasswordService } from '../../../utils/passwords.service';
+import { Roles } from '../../roles/constants/role.constants';
 
 @Injectable()
 export class UserQueryBuilder {
@@ -26,6 +27,7 @@ export class UserQueryBuilder {
       password: await this.passwordService.hashPassword(params.password),
       phone: params.phone,
       name: params.name,
+      country: params.country,
       profilePicture: params.profilePicture,
       Role: { connect: params.roleIds.map((roleId) => ({ id: roleId })) },
     };
@@ -52,7 +54,12 @@ export class UserQueryBuilder {
           { phone: { contains: search } },
         ],
       });
-    if (currentUserId) AND.push({ id: { not: currentUserId } });
+    if (currentUserId) {
+      AND.push({ id: { not: currentUserId } });
+      AND.push({
+        Role: { some: { name: { notIn: [Roles.SUPER_ADMIN] } } },
+      });
+    }
     return { AND };
   }
 
