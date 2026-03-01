@@ -1,9 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ILoginDto } from '../interfaces/auth.dto.interface';
 import { IsEmail } from 'class-validator';
 import { NotEmptyString, OptionalString } from '../../../utils/string.helper';
 
-export class ClientLoginDto implements ILoginDto {
+export class ClientLoginDto {
   @ApiProperty({ default: 'client@vbaccounts.com' })
   @IsEmail()
   email: string;

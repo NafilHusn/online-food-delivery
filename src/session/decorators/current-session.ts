@@ -1,5 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { RequestWithUser } from '../../auth/types/request_with_user';
+import { RequestWithUser } from '../../auth/types/request-with-user';
 
 export const CurrentSession = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {

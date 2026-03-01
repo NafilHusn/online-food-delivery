@@ -4,6 +4,7 @@ model User {
   password       String
   phone          String?
   name           String?
+  country        String?
   active         Boolean   @default(true)
   profilePicture String?
   lastLoginAt    DateTime?

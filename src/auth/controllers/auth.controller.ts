@@ -19,7 +19,7 @@ import { ProtectRoute } from '../guards/auth.guard';
 import { AuthService } from '../services/auth.service';
 import { CurrentSession } from 'src/session/decorators/current-session';
 import type { UserSession } from '@prisma/client';
-import type { RequestWithUser } from '../types/request_with_user';
+import type { RequestWithUser } from '../types/request-with-user';
 
 @Controller('auth')
 export class AuthController {
@@ -51,10 +51,9 @@ export class AuthController {
     @Req() req: RequestWithUser,
     @Body() params: UpdateProfileParamsDTO,
   ) {
-    await this.service.updateProfile(req.user.id, {
-      email: params.email,
-      name: params.name,
-      phone: params.phone,
+    await this.service.updateProfile({
+      id: req.user.id,
+      ...params,
     });
     return { updated: true };
   }

@@ -13,12 +13,8 @@ import DateHelpers from 'utils/date.helper';
 import { PasswordService } from 'utils/passwords.service';
 import { UserService } from '../../users/services/users.service';
 import ErrorMessages from '../constants/error_messages';
-import {
-  JWTPayload,
-  LoginDto,
-  LoginResponseTypeDTO,
-  UpdateProfileParamsDTO,
-} from '../dto/auth.dto';
+import { JWTPayload, LoginDto, LoginResponseTypeDTO } from '../dto/auth.dto';
+import { UpdateUserDto } from '../../users/dto/user.dto';
 
 @Injectable()
 export class AuthService {
@@ -79,7 +75,8 @@ export class AuthService {
         account.id,
         loginDto.firebaseToken,
       );
-      await this.userService.updateAccount(account.id, {
+      await this.userService.updateAccount({
+        id: account.id,
         lastLoginAt: DateHelpers.getCurrentDate(),
       });
       return await this.createSession(account, createdSessionId);
@@ -126,8 +123,8 @@ export class AuthService {
     });
   }
 
-  async updateProfile(userId: string, params: UpdateProfileParamsDTO) {
-    return await this.userService.updateAccount(userId, params);
+  async updateProfile(params: UpdateUserDto) {
+    return await this.userService.updateAccount(params);
   }
 
   async refreshAccessToken(refreshBearerToken: string) {

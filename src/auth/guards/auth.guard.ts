@@ -13,7 +13,7 @@ import { UserService } from 'src/users/services/users.service';
 import { AuthService } from '../services/auth.service';
 
 import { RoleNames } from 'src/roles/constants/role.constants';
-import { RequestWithUser } from '../types/request_with_user';
+import { RequestWithUser } from '../types/request-with-user';
 import { RolesGuard } from '../../roles/guards/roles.guard';
 import { Role } from '../../roles/decorators/roles.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';

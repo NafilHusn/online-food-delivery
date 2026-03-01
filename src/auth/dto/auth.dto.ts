@@ -1,16 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsOptional } from 'class-validator';
-import {
-  IJWTPayload,
-  ILoginDto,
-  ILoginResponseTypeDTO,
-  IProfileDTO,
-  IUpdateProfileParamsDTO,
-} from '../interfaces/auth.dto.interface';
+import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { IsEmail } from 'class-validator';
 import { NotEmptyString, OptionalString } from '../../../utils/string.helper';
 import { Role } from '@prisma/client';
+import { UpdateUserDto } from '../../users/dto/user.dto';
 
-export class LoginDto implements ILoginDto {
+export class LoginDto {
   @ApiProperty({ default: 'admin@gmail.com' })
   @IsEmail()
   email: string;
@@ -22,7 +16,7 @@ export class LoginDto implements ILoginDto {
   firebaseToken?: string;
 }
 
-export class ProfileDTO implements IProfileDTO {
+export class ProfileDTO {
   @ApiProperty()
   id: string;
   @ApiProperty({ type: 'string', nullable: true, required: false })
@@ -37,22 +31,12 @@ export class ProfileDTO implements IProfileDTO {
   profilePicture?: string | null;
 }
 
-export class UpdateProfileParamsDTO
-  implements Partial<ProfileDTO>, IUpdateProfileParamsDTO
-{
-  @ApiProperty()
-  @IsOptional()
-  @IsEmail()
-  email?: string;
+export class UpdateProfileParamsDTO extends OmitType(UpdateUserDto, [
+  'id',
+  'lastLoginAt',
+] as const) {}
 
-  @OptionalString()
-  name?: string;
-
-  @OptionalString()
-  phone?: string;
-}
-
-export class LoginResponseTypeDTO implements ILoginResponseTypeDTO {
+export class LoginResponseTypeDTO {
   @ApiProperty()
   readonly token: string;
   @ApiProperty()
@@ -61,7 +45,7 @@ export class LoginResponseTypeDTO implements ILoginResponseTypeDTO {
   readonly userData: ProfileDTO & { timestamp: Date };
 }
 
-export class JWTPayload implements IJWTPayload {
+export class JWTPayload {
   sessionId: string;
   userId: string;
   timestamp: string;

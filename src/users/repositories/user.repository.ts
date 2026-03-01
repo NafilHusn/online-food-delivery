@@ -10,14 +10,7 @@ export class UserRepository {
     private readonly queryBuilder: UserQueryBuilder,
   ) {}
 
-  async findOne(params: {
-    phoneNumber?: string;
-    roleId?: string;
-    id?: string;
-    email?: string;
-    customerId?: string;
-  }) {
-    const where = this.queryBuilder.buildListWhereQuery(params);
+  async findOne(where: Prisma.UserWhereInput) {
     const entry = await this.dbService.user.findFirst({
       where,
       include: { Role: true },
@@ -47,9 +40,18 @@ export class UserRepository {
     });
   }
 
-  async findMany(params: { roleId?: string }) {
-    const where = this.queryBuilder.buildListWhereQuery(params);
-    const entries = await this.dbService.user.findMany({ where });
+  async findMany(
+    where?: Prisma.UserWhereInput,
+    skip?: number,
+    limit?: number,
+    select: Prisma.UserSelect = this.queryBuilder.buildSelectQuery(),
+  ) {
+    const entries = await this.dbService.user.findMany({
+      where,
+      skip,
+      take: limit,
+      select,
+    });
     return entries;
   }
 
@@ -59,5 +61,9 @@ export class UserRepository {
   ) {
     const createdUser = await db.user.create({ data });
     return createdUser;
+  }
+
+  async count(where?: Prisma.UserWhereInput) {
+    return await this.dbService.user.count({ where });
   }
 }

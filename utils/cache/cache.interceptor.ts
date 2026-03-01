@@ -9,7 +9,7 @@ import {
 import { mergeMap, Observable, of } from 'rxjs';
 import { CacheService } from './cache.service';
 import { Reflector } from '@nestjs/core';
-import { RequestWithUser } from 'src/auth/types/request_with_user';
+import { RequestWithUser } from 'src/auth/types/request-with-user';
 import { ConfigService } from '@nestjs/config';
 
 export const CacheTTL = Reflector.createDecorator<number>();

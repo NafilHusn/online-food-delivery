@@ -47,7 +47,7 @@ export class PermissionRepository {
 
   async checkPermission(role: string, permission: string) {
     try {
-      return this.cache.getMember(`permission:${role}`, permission);
+      return this.cache.getMember(`permission:role:${role}`, permission);
     } catch (error) {
       console.error(error);
       return this.db.permission.findFirst({

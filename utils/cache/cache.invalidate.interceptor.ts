@@ -11,7 +11,7 @@ import {
 import { CacheService } from './cache.service';
 import { Reflector } from '@nestjs/core';
 import { mergeMap, Observable } from 'rxjs';
-import { RequestWithUser } from 'src/auth/types/request_with_user';
+import { RequestWithUser } from 'src/auth/types/request-with-user';
 
 @Injectable()
 export class InvalidateCacheInterceptor implements NestInterceptor {

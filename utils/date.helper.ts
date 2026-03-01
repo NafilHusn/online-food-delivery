@@ -28,6 +28,7 @@ import {
 } from 'date-fns';
 import { fromZonedTime, toZonedTime } from 'date-fns-tz';
 import { ValidationOptions } from 'joi';
+import { TransformToDate } from './decorators/TransformToDate';
 const timeZone = 'Asia/Dubai';
 type Time = { hour: number; minutes: number; seconds: number };
 
@@ -170,7 +171,11 @@ export function MinDateProp(relatedKey: keyof any, opts?: ValidationOptions) {
 }
 
 export const OptionalDate = (args?: ApiPropertyOptions) =>
-  applyDecorators(ApiPropertyOptional(args), IsDateString(), IsOptional());
+  applyDecorators(
+    ApiPropertyOptional({ ...args, description: 'Date in dd-MM-yyyy format' }),
+    IsOptional(),
+    TransformToDate(),
+  );
 
 export default {
   getYearsCount,

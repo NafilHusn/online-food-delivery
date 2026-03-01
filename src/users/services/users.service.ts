@@ -9,6 +9,12 @@ import { PasswordService } from 'utils/passwords.service';
 import { UserRepository } from '../repositories/user.repository';
 import { RoleNames } from 'src/roles/constants/role.constants';
 import { UserQueryBuilder } from '../query-builder/user.query-builder';
+import {
+  CreateUserDto,
+  GetUsersParamsDto,
+  UpdateUserDto,
+} from '../dto/user.dto';
+import { UserValidator } from '../validators/user.validator';
 
 @Injectable()
 export class UserService {
@@ -17,6 +23,7 @@ export class UserService {
     private readonly roleService: RoleService,
     private readonly passwordService: PasswordService,
     private readonly queryBuilder: UserQueryBuilder,
+    private readonly userValidator: UserValidator,
   ) {}
 
   async findOneByEmail(email: string, roleName?: RoleNames) {
@@ -26,75 +33,59 @@ export class UserService {
       if (!roleDetails) throw new InternalServerErrorException();
       roleId = roleDetails.id;
     }
-    return await this.userRepo.findOne({ email, roleId });
+    const where = this.queryBuilder.buildListWhereQuery({
+      email,
+      roleIds: roleId ? [roleId] : undefined,
+    });
+    return await this.userRepo.findOne(where);
   }
 
   async findById(id: string) {
     return await this.userRepo.findOne({ id });
   }
 
-  async findUserOfCustomer(customerId: string) {
-    return await this.userRepo.findOne({ customerId });
-  }
-
-  async updateAccount(
-    id: string,
-    updateData: Partial<{
-      email: string;
-      name: string;
-      password: string;
-      lastLoginAt: Date;
-      active: boolean;
-      phone: string;
-      profilePicture: string;
-    }>,
-  ) {
-    if (updateData.email) {
-      const where = this.queryBuilder.buildCheckExistingUserQuery(
-        updateData.email,
-        id,
-      );
-      const existingUser = await this.userRepo.findFirst(where);
-      if (existingUser) throw new BadRequestException('User already exists');
-    }
-    const { password } = updateData;
-    if (password) {
-      updateData.password = await this.passwordService.hashPassword(password);
-    }
-    return await this.userRepo.update(id, updateData);
-  }
-
-  async createAccount(
-    roleIds: string[],
-    email: string,
-    password: string,
-    phone?: string,
-    db?: Prisma.TransactionClient,
-    name?: string,
-    profilePicture?: string,
-  ) {
-    const existingUser = await this.findOneByEmail(email);
-    if (existingUser) throw new BadRequestException('User already exists');
-    const createInput: Prisma.UserUncheckedCreateInput = {
-      email,
-      phone,
-      name,
-      Role: { connect: roleIds.map((roleId) => ({ id: roleId })) },
-      password,
-      profilePicture,
-    };
-    if (password)
-      createInput.password = await this.passwordService.hashPassword(password);
-    return await this.userRepo.insert(createInput, db);
-  }
-
   async findByRole(roleName: RoleNames) {
     const roleDetails = await this.roleService.getRoleByName(roleName);
     if (!roleDetails) throw new InternalServerErrorException();
-    return await this.userRepo.findMany({ roleId: roleDetails.id });
+    const where = this.queryBuilder.buildListWhereQuery({
+      roleIds: [roleDetails.id],
+    });
+    return await this.userRepo.findMany(where);
+  }
+
+  async updateAccount(updateData: UpdateUserDto) {
+    await this.userValidator.isExistingUser(updateData.email, updateData.id);
+    if (updateData.password) {
+      updateData.password = await this.passwordService.hashPassword(
+        updateData.password,
+      );
+    }
+    await this.userRepo.update(updateData.id, updateData);
+    return { updated: true };
+  }
+
+  async createAccount(params: CreateUserDto, db?: Prisma.TransactionClient) {
+    const existingUser = await this.findOneByEmail(params.email);
+    if (existingUser) throw new BadRequestException('User already exists');
+    const createInput = await this.queryBuilder.buildCreateQuery(params);
+    const user = await this.userRepo.insert(createInput, db);
+    return { id: user.id };
+  }
+
+  async getAllUsers(params: GetUsersParamsDto, currentUserId: string) {
+    const where = this.queryBuilder.buildListWhereQuery(params, currentUserId);
+    const [data, total] = await Promise.all([
+      this.userRepo.findMany(where, params.skip, params.limit),
+      this.userRepo.count(where),
+    ]);
+    return {
+      data,
+      total,
+    };
   }
 
   async deleteAccount(id: string) {
-    return await this.userRepo.delete(id);
+    await this.userRepo.delete(id);
+    return { deleted: true };
   }
 }

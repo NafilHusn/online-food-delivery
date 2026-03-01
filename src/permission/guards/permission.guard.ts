@@ -7,14 +7,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { PermissionService } from '../services/permission.service';
-import { RequestWithUser } from '../../auth/types/request_with_user';
+import { RequestWithUser } from '../../auth/types/request-with-user';
 import { Reflector } from '@nestjs/core';
 
 const PERMISSION_KEY = 'permissions';
 export type PermissionMode = 'ALL' | 'ANY';
 
 @Injectable()
-export class PermissionGuard implements CanActivate {
+export class PermissionGuardClass implements CanActivate {
   constructor(
     private readonly permissionService: PermissionService,
     private readonly reflector: Reflector,
@@ -55,12 +55,12 @@ export class PermissionGuard implements CanActivate {
   }
 }
 
-export const Permissions = (
+export const PermissionGuard = (
   permissions: string[],
   mode: PermissionMode = 'ALL',
 ) => {
   return applyDecorators(
     SetMetadata(PERMISSION_KEY, { permissions, mode }),
-    UseGuards(PermissionGuard),
+    UseGuards(PermissionGuardClass),
   );
 };
