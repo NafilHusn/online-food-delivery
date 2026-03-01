@@ -21,23 +21,65 @@ async function main() {
   });
 
   //   create admin user and assign permissions
-  await prisma.user.create({
-    data: {
-      name: 'Admin',
-      email: 'admin@gmail.com',
-      password: await passwordService.hashPassword('admin123'),
-      Role: { connect: { name: Roles.ADMIN } },
-    },
+  let admin = await prisma.user.findFirst({
+    where: { email: 'admin@gmail.com' },
+    include: { Role: true },
   });
-  const userPermissions = await prisma.module.create({
-    data: {
+  if (!admin) {
+    admin = await prisma.user.create({
+      data: {
+        name: 'Admin',
+        email: 'admin@gmail.com',
+        password: await passwordService.hashPassword('admin123'),
+        Role: { connect: { name: Roles.ADMIN } },
+      },
+      include: { Role: true },
+    });
+  }
+  const userPermissions = await prisma.module.upsert({
+    where: { name: 'User' },
+    update: {
+      permissions: {
+        connectOrCreate: [
+          {
+            where: { key: 'user:create' },
+            create: { action: 'CREATE', key: 'user:create' },
+          },
+          {
+            where: { key: 'user:read' },
+            create: { action: 'READ', key: 'user:read' },
+          },
+          {
+            where: { key: 'user:update' },
+            create: { action: 'UPDATE', key: 'user:update' },
+          },
+          {
+            where: { key: 'user:delete' },
+            create: { action: 'DELETE', key: 'user:delete' },
+          },
+        ],
+      },
+    },
+    create: {
       name: 'User',
       permissions: {
-        create: [
-          { action: 'CREATE', key: 'user:create' },
-          { action: 'READ', key: 'user:read' },
-          { action: 'UPDATE', key: 'user:update' },
-          { action: 'DELETE', key: 'user:delete' },
+        connectOrCreate: [
+          {
+            where: { key: 'user:create' },
+            create: { action: 'CREATE', key: 'user:create' },
+          },
+          {
+            where: { key: 'user:read' },
+            create: { action: 'READ', key: 'user:read' },
+          },
+          {
+            where: { key: 'user:update' },
+            create: { action: 'UPDATE', key: 'user:update' },
+          },
+          {
+            where: { key: 'user:delete' },
+            create: { action: 'DELETE', key: 'user:delete' },
+          },
         ],
       },
     },
@@ -50,32 +92,72 @@ async function main() {
       moduleId: userPermissions.id,
     }),
   );
-
-  await prisma.role.update({
-    where: { name: Roles.ADMIN },
-    data: {
-      rolePermissions: {
-        create: adminRolePermissions,
+  const adminRoleId = admin.Role?.find(
+    (r) => r.name === (Roles.ADMIN as string),
+  )?.id;
+  if (adminRoleId) {
+    await prisma.role.update({
+      where: { name: Roles.ADMIN },
+      data: {
+        rolePermissions: {
+          connectOrCreate: adminRolePermissions.map((rp) => ({
+            where: {
+              roleId_permissionId: {
+                roleId: adminRoleId,
+                permissionId: rp.permissionId,
+              },
+            },
+            create: rp,
+          })),
+        },
       },
-    },
-  });
+    });
+  }
 
   //   create super admin user and assign permissions
-  await prisma.user.create({
-    data: {
-      name: 'Super Admin',
-      email: 'superadmin@vbaccounts.com',
-      password: await passwordService.hashPassword('superadmin123'),
-      Role: { connect: { name: Roles.SUPER_ADMIN } },
-    },
+  let superAdmin = await prisma.user.findFirst({
+    where: { email: 'superadmin@vbaccounts.com' },
+    include: { Role: true },
   });
-  const superAdminPermissions = await prisma.module.create({
-    data: {
+  if (!superAdmin) {
+    superAdmin = await prisma.user.create({
+      data: {
+        name: 'Super Admin',
+        email: 'superadmin@vbaccounts.com',
+        password: await passwordService.hashPassword('superadmin123'),
+        Role: { connect: { name: Roles.SUPER_ADMIN } },
+      },
+      include: { Role: true },
+    });
+  }
+  const superAdminPermissions = await prisma.module.upsert({
+    where: { name: 'Permissions' },
+    update: {
+      permissions: {
+        connectOrCreate: [
+          {
+            where: { key: 'permission:read' },
+            create: { action: 'READ', key: 'permission:read' },
+          },
+          {
+            where: { key: 'permission:update' },
+            create: { action: 'UPDATE', key: 'permission:update' },
+          },
+        ],
+      },
+    },
+    create: {
       name: 'Permissions',
       permissions: {
-        create: [
-          { action: 'READ', key: 'permission:read' },
-          { action: 'UPDATE', key: 'permission:update' },
+        connectOrCreate: [
+          {
+            where: { key: 'permission:read' },
+            create: { action: 'READ', key: 'permission:read' },
+          },
+          {
+            where: { key: 'permission:update' },
+            create: { action: 'UPDATE', key: 'permission:update' },
+          },
         ],
       },
     },
@@ -89,14 +171,27 @@ async function main() {
     }),
   );
 
-  await prisma.role.update({
-    where: { name: Roles.SUPER_ADMIN },
-    data: {
-      rolePermissions: {
-        create: [...adminRolePermissions, ...superAdminRolePermissions],
+  const superAdminRoleId = superAdmin.Role?.find(
+    (r) => r.name === (Roles.SUPER_ADMIN as string),
+  )?.id;
+  if (superAdminRoleId) {
+    await prisma.role.update({
+      where: { name: Roles.SUPER_ADMIN },
+      data: {
+        rolePermissions: {
+          connectOrCreate: superAdminRolePermissions.map((rp) => ({
+            where: {
+              roleId_permissionId: {
+                roleId: superAdminRoleId,
+                permissionId: rp.permissionId,
+              },
+            },
+            create: rp,
+          })),
+        },
       },
-    },
-  });
+    });
+  }
   console.log('🌱 Seeding completed');
 }
 

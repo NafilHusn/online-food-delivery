@@ -56,4 +56,64 @@ export const CURRENT_PERMISSIONS = [
       },
     ],
   },
+  {
+    module: 'Menu Category',
+    permissions: [
+      {
+        key: 'menu-category:create',
+        action: 'CREATE',
+        assignedRoles: [Roles.ADMIN, Roles.SUPER_ADMIN],
+      },
+      {
+        key: 'menu-category:read',
+        action: 'READ',
+        assignedRoles: [
+          Roles.ADMIN,
+          Roles.SUPER_ADMIN,
+          Roles.MANAGER,
+          Roles.MEMBER,
+        ],
+      },
+      {
+        key: 'menu-category:update',
+        action: 'UPDATE',
+        assignedRoles: [Roles.ADMIN, Roles.SUPER_ADMIN],
+      },
+      {
+        key: 'menu-category:delete',
+        action: 'DELETE',
+        assignedRoles: [Roles.ADMIN, Roles.SUPER_ADMIN],
+      },
+    ],
+  },
+  {
+    module: 'Menu Item',
+    permissions: [
+      {
+        key: 'menu-item:create',
+        action: 'CREATE',
+        assignedRoles: [Roles.ADMIN, Roles.SUPER_ADMIN],
+      },
+      {
+        key: 'menu-item:read',
+        action: 'READ',
+        assignedRoles: [
+          Roles.ADMIN,
+          Roles.SUPER_ADMIN,
+          Roles.MANAGER,
+          Roles.MEMBER,
+        ],
+      },
+      {
+        key: 'menu-item:update',
+        action: 'UPDATE',
+        assignedRoles: [Roles.ADMIN, Roles.SUPER_ADMIN],
+      },
+      {
+        key: 'menu-item:delete',
+        action: 'DELETE',
+        assignedRoles: [Roles.ADMIN, Roles.SUPER_ADMIN],
+      },
+    ],
+  },
 ];

@@ -10,6 +10,7 @@ import { SessionModule } from './session/session.module';
 import { SwaggerModule } from './swagger/swagger.module';
 import { PermissionModule } from './permission/permission.module';
 import { SharedCacheModule } from '../utils/cache/cache.module';
+import { MenuModule } from './menu/menu.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { SharedCacheModule } from '../utils/cache/cache.module';
     SessionModule,
     PermissionModule,
     RestaurantModule,
+    MenuModule,
   ],
 })
 export class AppModule {}

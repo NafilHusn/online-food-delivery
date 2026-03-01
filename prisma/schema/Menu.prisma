@@ -1,0 +1,30 @@
+model MenuCategory {
+    id           String     @id @default(uuid())
+    name         String
+    active       Boolean    @default(true)
+
+    restaurantId String
+    restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+
+    deletedAt    DateTime?
+    createdAt    DateTime   @default(now())
+    updatedAt    DateTime   @updatedAt
+
+    items        MenuItems[]
+}
+
+model MenuItems {
+    id           String     @id @default(uuid())
+    name         String
+    description  String?
+    price        Decimal
+    image        String
+    active       Boolean    @default(true)
+
+    categoryId   String
+    category     MenuCategory @relation(fields: [categoryId], references: [id])
+
+    deletedAt    DateTime?
+    createdAt    DateTime   @default(now())
+    updatedAt    DateTime   @updatedAt
+}

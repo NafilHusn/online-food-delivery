@@ -1,0 +1,82 @@
+import { ApiProperty, PartialType } from '@nestjs/swagger';
+import {
+  NotEmptyString,
+  OptionalString,
+  UUIDString,
+} from '../../../utils/string.helper';
+import { Limit, Skip } from '../../../utils/pagination.helper';
+import { IsBoolean, IsNumber, IsOptional } from 'class-validator';
+
+export class CreateMenuItemDto {
+  @NotEmptyString()
+  name: string;
+
+  @OptionalString()
+  description?: string;
+
+  @IsNumber()
+  price: number;
+
+  @NotEmptyString()
+  image: string;
+
+  @UUIDString()
+  categoryId: string;
+}
+
+export class UpdateMenuItemDto extends PartialType(CreateMenuItemDto) {
+  @UUIDString()
+  id: string;
+
+  @IsBoolean()
+  @IsOptional()
+  active?: boolean;
+}
+
+export class GetMenuItemsParamsDto {
+  @OptionalString()
+  search?: string;
+
+  @OptionalString()
+  categoryId?: string;
+
+  @Limit()
+  limit: number;
+
+  @Skip()
+  skip: number;
+}
+
+export class MenuItemResponseDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty({ required: false })
+  description?: string;
+
+  @ApiProperty()
+  price: number;
+
+  @ApiProperty()
+  image: string;
+
+  @ApiProperty()
+  categoryId: string;
+
+  @ApiProperty()
+  active: boolean;
+
+  @ApiProperty()
+  createdAt: Date;
+
+  @ApiProperty()
+  updatedAt: Date;
+}
+
+export class DeleteMenuItemDto {
+  @UUIDString()
+  id: string;
+}
