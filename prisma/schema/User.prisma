@@ -1,0 +1,20 @@
+model User {
+  id             String    @id @default(uuid())
+  email          String    @unique
+  password       String
+  phone          String?
+  name           String?
+  country        String?
+  active         Boolean   @default(true)
+  profilePicture String?
+  lastLoginAt    DateTime?
+  deletedAt      DateTime?
+  createdAt      DateTime  @default(now())
+
+  Role         Role[]
+  userSessions UserSession[]
+  takenOrders  Order[]       @relation("TakenOrders")
+
+  @@index([email])
+  @@index([phone])
+}

@@ -1,0 +1,24 @@
+model UserSession {
+    id        String   @id @default(uuid())
+    expiresAt DateTime
+    createdAt DateTime @default(now())
+
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    refreshTokens SessionRefreshTokens[]
+    fcmToken      String?
+
+    @@index([userId])
+}
+
+model SessionRefreshTokens {
+    id        String   @id @default(uuid())
+    expiresAt DateTime
+    createdAt DateTime @default(now())
+
+    sessionId String
+    session   UserSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+    @@index([sessionId])
+}
