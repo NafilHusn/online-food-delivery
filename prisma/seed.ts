@@ -192,6 +192,80 @@ async function main() {
       },
     });
   }
+
+  //  create managers
+  const managers = [
+    {
+      name: 'Captain Marvel',
+      email: 'captain-marvel@gmail.com',
+      country: 'India',
+      password: await passwordService.hashPassword('manager123'),
+      Role: { connect: { name: Roles.MANAGER } },
+    },
+    {
+      name: 'Captain America',
+      email: 'captain-america@gmail.com',
+      country: 'America',
+      password: await passwordService.hashPassword('manager123'),
+      Role: { connect: { name: Roles.MANAGER } },
+    },
+  ];
+  await Promise.all(
+    managers.map((manager) =>
+      prisma.user.upsert({
+        where: { email: manager.email },
+        update: {},
+        create: {
+          name: manager.name,
+          email: manager.email,
+          password: manager.password,
+          country: manager.country,
+          Role: manager.Role,
+        },
+      }),
+    ),
+  );
+
+  // create team members
+  const members = [
+    {
+      name: 'Thanos',
+      email: 'thanos@gmail.com',
+      country: 'India',
+      password: await passwordService.hashPassword('member123'),
+      Role: { connect: { name: Roles.MEMBER } },
+    },
+    {
+      name: 'Thor',
+      email: 'thor@gmail.com',
+      country: 'India',
+      password: await passwordService.hashPassword('member123'),
+      Role: { connect: { name: Roles.MEMBER } },
+    },
+    {
+      name: 'Travis',
+      email: 'travis@gmail.com',
+      country: 'America',
+      password: await passwordService.hashPassword('member123'),
+      Role: { connect: { name: Roles.MEMBER } },
+    },
+  ];
+  await Promise.all(
+    members.map((member) =>
+      prisma.user.upsert({
+        where: { email: member.email },
+        update: {},
+        create: {
+          name: member.name,
+          email: member.email,
+          password: member.password,
+          country: member.country,
+          Role: member.Role,
+        },
+      }),
+    ),
+  );
+
   console.log('🌱 Seeding completed');
 }
 

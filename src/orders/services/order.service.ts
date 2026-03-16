@@ -30,8 +30,9 @@ export class OrderService {
 
   async updateOrder(updateData: UpdateOrderDto) {
     await this.orderValidator.isOrderExist(updateData.id);
+    await this.orderValidator.isOrderEditable(updateData.id);
 
-    const updateQuery = this.queryBuilder.buildUpdateQuery(updateData);
+    const updateQuery = await this.queryBuilder.buildUpdateQuery(updateData);
     await this.orderRepo.update(updateData.id, updateQuery);
     return { updated: true };
   }
@@ -43,7 +44,10 @@ export class OrderService {
       throw new BadRequestException('Order must contain at least one item');
     }
 
-    const createInput = this.queryBuilder.buildCreateQuery(params, userId);
+    const createInput = await this.queryBuilder.buildCreateQuery(
+      params,
+      userId,
+    );
     const order = await this.orderRepo.insert(createInput);
     return { id: order.id };
   }

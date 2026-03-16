@@ -49,6 +49,7 @@ export class MenuItemRepository {
       skip,
       take: limit,
       select,
+      orderBy: { name: 'asc' },
     });
     return entries;
   }

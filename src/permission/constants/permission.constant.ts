@@ -142,12 +142,32 @@ export const CURRENT_PERMISSIONS = [
       {
         key: 'order:update',
         action: 'UPDATE',
-        assignedRoles: [Roles.ADMIN, Roles.SUPER_ADMIN],
+        assignedRoles: [
+          Roles.ADMIN,
+          Roles.SUPER_ADMIN,
+          Roles.MANAGER,
+          Roles.MEMBER,
+        ],
       },
       {
         key: 'order:delete',
         action: 'DELETE',
         assignedRoles: [Roles.ADMIN, Roles.SUPER_ADMIN],
+      },
+      {
+        key: 'order:payment:method:update',
+        action: 'UPDATE',
+        assignedRoles: [Roles.ADMIN, Roles.SUPER_ADMIN],
+      },
+      {
+        key: 'order:payment:status:update',
+        action: 'UPDATE',
+        assignedRoles: [Roles.ADMIN, Roles.SUPER_ADMIN, Roles.MANAGER],
+      },
+      {
+        key: 'order:status:update',
+        action: 'UPDATE',
+        assignedRoles: [Roles.ADMIN, Roles.SUPER_ADMIN, Roles.MANAGER],
       },
     ],
   },

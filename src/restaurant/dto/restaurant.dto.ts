@@ -38,7 +38,7 @@ export class GetRestaurantsParamsDto {
   skip: number;
 }
 
-export class ResponseDto {
+export class RestaurantResponseDto {
   @ApiProperty()
   id: string;
 

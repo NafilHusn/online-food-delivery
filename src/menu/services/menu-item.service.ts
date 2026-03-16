@@ -27,7 +27,7 @@ export class MenuItemService {
   private async uploadFile(file: Express.Multer.File): Promise<string> {
     const uploaded = await this.uploadService.uploadFile(
       file,
-      '/client',
+      '/menu-items',
       ALLOWED_IMAGE_TYPES,
     );
     return uploaded.path;

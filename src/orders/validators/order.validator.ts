@@ -1,6 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { OrderRepository } from '../repositories/order.repository';
 import { RestaurantService } from '../../restaurant/services/restaurant.service';
+import { OrderStatus } from '@prisma/client';
 
 @Injectable()
 export class OrderValidator {
@@ -21,6 +26,17 @@ export class OrderValidator {
     const order = await this.orderRepo.findOne({ id });
     if (!order) {
       throw new NotFoundException('Order not found');
+    }
+    return order;
+  }
+
+  async isOrderEditable(id: string) {
+    const order = await this.isOrderExist(id);
+    if (
+      order.status !== OrderStatus.PENDING &&
+      order.status !== OrderStatus.ACCEPTED
+    ) {
+      throw new BadRequestException('Order is not editable');
     }
     return order;
   }

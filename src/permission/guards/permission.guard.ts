@@ -35,13 +35,11 @@ export class PermissionGuardClass implements CanActivate {
       return false;
     }
 
-    const permissionSets = await Promise.all(
-      userRoles.map((role) =>
-        this.permissionService.getPermissionByRole(role.name),
-      ),
+    const permissionSets = await this.permissionService.getPermissionByRole(
+      userRoles.map((r) => r.name),
     );
 
-    const effectivePermissions = new Set(permissionSets.flat());
+    const effectivePermissions = new Set(permissionSets);
 
     if (mode === 'ALL') {
       return required.every((p) => effectivePermissions.has(p));

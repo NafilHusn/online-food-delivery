@@ -15,6 +15,8 @@ import {
   UUIDStringOptional,
 } from '../../../utils/string.helper';
 import { NotEmptyNumber } from '../../../utils/number.helper';
+import { RestaurantResponseDto } from '../../restaurant/dto/restaurant.dto';
+import { MenuItemResponseDto } from '../../menu/dto/menu-item.dto';
 
 export class OrderItemDto {
   @UUIDString()
@@ -89,15 +91,29 @@ export class GetOrdersParamsDto {
   skip: number;
 }
 
+export class OrderItemResponseDto {
+  @ApiProperty()
+  id: number;
+
+  @ApiProperty({ type: MenuItemResponseDto })
+  menuItem: MenuItemResponseDto;
+
+  @ApiProperty()
+  quantity: number;
+}
+
 export class OrderResponseDto {
   @ApiProperty()
   id: number;
 
   @ApiProperty()
-  userId: number;
+  refNo: number;
 
   @ApiProperty()
-  restaurantId: number;
+  customerPhone?: string;
+
+  @ApiProperty({ type: RestaurantResponseDto })
+  restaurant: RestaurantResponseDto;
 
   @ApiProperty({ enum: OrderStatus })
   status: OrderStatus;
@@ -116,6 +132,9 @@ export class OrderResponseDto {
 
   @ApiProperty()
   updatedAt: Date;
+
+  @ApiProperty({ type: [OrderItemResponseDto] })
+  orderItems: OrderItemResponseDto[];
 }
 
 export class DeleteOrderDto {

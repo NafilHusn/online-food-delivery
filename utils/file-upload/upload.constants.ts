@@ -1,6 +1,6 @@
 export const FILE_SIZE_LIMIT = 30 * 1024 * 1024; // 10MB
 
-export const ALLOWED_IMAGE_TYPES = ['.jpg', '.jpeg', '.png'];
+export const ALLOWED_IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.webp'];
 export const ALLOWED_DOCUMENT_TYPES = [
   '.pdf',
   '.doc',

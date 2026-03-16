@@ -1,7 +1,9 @@
 import { Role, User, UserSession } from '@prisma/client';
 import { Request } from 'express';
 
+export type UserWithRole = User & { Role: Role[] };
+
 export interface RequestWithUser extends Request {
-  user: User & { Role: Role[] };
+  user: UserWithRole;
   session: UserSession;
 }

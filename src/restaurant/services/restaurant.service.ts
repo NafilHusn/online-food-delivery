@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { RestaurantRepository } from '../repositories/restaurant.repository';
 import { RestaurantQueryBuilder } from '../query-builder/restaurant.query-builder';
 import {
@@ -17,8 +16,8 @@ export class RestaurantService {
     private readonly restaurantValidator: RestaurantValidator,
   ) {}
 
-  async findById(id: string) {
-    return await this.restaurantRepo.findOne({ id });
+  async findById(id: string, country?: string) {
+    return await this.restaurantRepo.findOne({ id, country });
   }
 
   async updateRestaurant(updateData: UpdateRestaurantDto) {

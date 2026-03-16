@@ -29,6 +29,8 @@ export class ProfileDTO {
   roles?: Role[] | null;
   @ApiProperty({ type: 'string', nullable: true, required: false })
   profilePicture?: string | null;
+  @ApiProperty({ type: 'string', nullable: true, required: false })
+  country?: string | null;
 }
 
 export class UpdateProfileParamsDTO extends OmitType(UpdateUserDto, [

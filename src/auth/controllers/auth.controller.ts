@@ -40,6 +40,8 @@ export class AuthController {
       name: req.user.name,
       phone: req.user.phone,
       email: req.user.email,
+      country: req.user.country,
+      profilePicture: req.user.profilePicture,
       roles: req.user.Role,
     };
   }

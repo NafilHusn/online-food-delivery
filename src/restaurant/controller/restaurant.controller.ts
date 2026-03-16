@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Post,
   Put,
   Query,
@@ -12,7 +13,7 @@ import {
   CreateRestaurantDto,
   DeleteRestaurantDto,
   GetRestaurantsParamsDto,
-  ResponseDto,
+  RestaurantResponseDto,
   UpdateRestaurantDto,
 } from '../dto/restaurant.dto';
 import { ProtectRoute } from '../../auth/guards/auth.guard';
@@ -21,7 +22,10 @@ import { ApiOkResponseWithData } from '../../../utils/decorators/ResponseFormat'
 import { CreatedResponse } from '../../../utils/decorators/CreatedResponse';
 import { DeletedResponse } from '../../../utils/decorators/DeletedResponse';
 import { UpdatedResponse } from '../../../utils/decorators/UpdatedResponse';
-import { CountryScope, WithCountryScope } from '../../users/interceptors/country-scoper.interceptor';
+import {
+  CountryScope,
+  WithCountryScope,
+} from '../../users/interceptors/country-scoper.interceptor';
 
 @Controller('restaurant')
 export class RestaurantController {
@@ -44,7 +48,7 @@ export class RestaurantController {
   }
 
   @Get()
-  @ApiOkResponseWithData(ResponseDto, true)
+  @ApiOkResponseWithData(RestaurantResponseDto, true)
   @WithCountryScope()
   @PermissionGuard(['restaurant:read'])
   @ProtectRoute()
@@ -56,6 +60,20 @@ export class RestaurantController {
       params.country = countryScope;
     }
     return await this.service.getAllRestaurants(params);
+  }
+
+  @Get(':id')
+  @ApiOkResponseWithData(RestaurantResponseDto)
+  @WithCountryScope()
+  @PermissionGuard(['restaurant:read'])
+  @ProtectRoute()
+  async detail(@Param('id') id: string, @CountryScope() countryScope: string) {
+    let countryScopeParam = countryScope;
+    if (countryScope) {
+      countryScopeParam = countryScope;
+    }
+    const data = await this.service.findById(id, countryScopeParam);
+    return { data };
   }
 
   @Delete()

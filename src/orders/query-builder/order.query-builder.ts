@@ -5,21 +5,26 @@ import {
   GetOrdersParamsDto,
   UpdateOrderDto,
 } from '../dto/order.dto';
+import { MenuItemService } from '../../menu/services/menu-item.service';
 
 @Injectable()
 export class OrderQueryBuilder {
+  constructor(private readonly menuItemService: MenuItemService) {}
   buildSelectQuery(): Prisma.OrderSelect {
     return {
       id: true,
+      refNo: true,
       customerPhone: true,
-      restaurantId: true,
+      restaurant: true,
       status: true,
       paymentMethod: true,
       paymentStatus: true,
-      takenById: true,
+      takenBy: true,
       createdAt: true,
       updatedAt: true,
-      orderItems: true,
+      orderItems: {
+        select: { id: true, quantity: true, price: true, menuItem: true },
+      },
     };
   }
 
@@ -55,26 +60,40 @@ export class OrderQueryBuilder {
     return where;
   }
 
-  buildCreateQuery(
+  async buildCreateQuery(
     params: CreateOrderDto,
     takenById?: string,
-  ): Prisma.OrderCreateInput {
+  ): Promise<Prisma.OrderCreateInput> {
     return {
       customerPhone: params.customerPhone,
-      restaurantId: params.restaurantId,
+      restaurant: { connect: { id: params.restaurantId } },
       paymentMethod: params.paymentMethod,
       takenBy: { connect: { id: takenById } },
       orderItems: {
         create:
-          params.orderItems?.map((item) => ({
-            menuItemId: item.menuItemId,
-            quantity: item.quantity,
-          })) || [],
+          (await Promise.all(
+            params.orderItems?.map(async (item) => {
+              const menuItem = await this.menuItemService.findById(
+                item.menuItemId,
+              );
+
+              if (!menuItem) {
+                throw new Error(`Menu item ${item.menuItemId} not found`);
+              }
+              return {
+                menuItemId: item.menuItemId,
+                quantity: item.quantity,
+                price: menuItem.price,
+              };
+            }),
+          )) || [],
       },
     };
   }
 
-  buildUpdateQuery(params: UpdateOrderDto): Prisma.OrderUpdateInput {
+  async buildUpdateQuery(
+    params: UpdateOrderDto,
+  ): Promise<Prisma.OrderUpdateInput> {
     const update: Prisma.OrderUpdateInput = {};
     if (params.status !== undefined) {
       update.status = params.status;
@@ -91,14 +110,26 @@ export class OrderQueryBuilder {
     if (params.orderItems !== undefined) {
       update.orderItems = {
         deleteMany: { orderId: params.id },
-        create: params.orderItems.map((item) => ({
-          menuItemId: item.menuItemId,
-          quantity: item.quantity,
-        })),
+        create: await Promise.all(
+          params.orderItems?.map(async (item) => {
+            const menuItem = await this.menuItemService.findById(
+              item.menuItemId,
+            );
+
+            if (!menuItem) {
+              throw new Error(`Menu item ${item.menuItemId} not found`);
+            }
+            return {
+              menuItemId: item.menuItemId,
+              quantity: item.quantity,
+              price: menuItem.price,
+            };
+          }),
+        ),
       };
     }
     if (params.restaurantId !== undefined) {
-      update.restaurantId = params.restaurantId;
+      update.restaurant = { connect: { id: params.restaurantId } };
     }
     return update;
   }

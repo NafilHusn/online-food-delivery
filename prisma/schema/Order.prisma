@@ -20,13 +20,16 @@ enum PaymentStatus {
 model Order {
     id            String        @id @default(uuid())
     customerPhone String?
-    restaurantId  String
+    refNo         Int           @unique @default(autoincrement())
     status        OrderStatus   @default(PENDING)
     paymentMethod PaymentMethod @default(CASH)
     paymentStatus PaymentStatus @default(PENDING)
 
     takenById String
     takenBy   User   @relation("TakenOrders", fields: [takenById], references: [id])
+
+    restaurantId String
+    restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
 
     orderItems OrderItem[]
 
@@ -35,11 +38,15 @@ model Order {
 }
 
 model OrderItem {
-    id         String   @id @default(uuid())
-    orderId    String
+    id        String   @id @default(uuid())
+    orderId   String
+    quantity  Int
+    price     Decimal  @default(0)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
     menuItemId String
-    quantity   Int
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
-    order      Order    @relation(fields: [orderId], references: [id])
+    menuItem   MenuItems @relation(fields: [menuItemId], references: [id])
+
+    order Order @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }

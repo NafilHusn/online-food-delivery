@@ -35,11 +35,16 @@ export class PermissionService implements OnModuleInit {
     await this.repo.setPermissionToCache();
   }
 
-  async getPermissionByRole(role: string) {
+  async getPermissionByRole(role: string[]) {
     return this.repo.getPermissionKeysByRole(role);
   }
 
   async hasPermission(role: string, permission: string) {
     return this.repo.checkPermission(role, permission);
+  }
+
+  async getAllPermissionsWithModules(roles: string[]) {
+    const data = await this.repo.getAllPermissionsWithModules(roles);
+    return { data };
   }
 }

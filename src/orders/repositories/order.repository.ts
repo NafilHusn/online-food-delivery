@@ -10,38 +10,40 @@ export class OrderRepository {
     private readonly queryBuilder: OrderQueryBuilder,
   ) {}
 
-  async findOne(where: Prisma.OrderWhereInput) {
+  async findOne(
+    where: Prisma.OrderWhereInput,
+    select: Prisma.OrderSelect = this.queryBuilder.buildSelectQuery(),
+  ) {
     const entry = await this.dbService.order.findFirst({
       where,
-      include: {
-        orderItems: true,
-      },
+      select,
     });
     return entry;
   }
 
-  async findFirst(where: Prisma.OrderWhereInput) {
+  async findFirst(
+    where: Prisma.OrderWhereInput,
+    select: Prisma.OrderSelect = this.queryBuilder.buildSelectQuery(),
+  ) {
     return await this.dbService.order.findFirst({
       where,
-      include: {
-        orderItems: true,
-      },
+      select,
     });
   }
 
-  async update(id: string, data: Prisma.OrderUpdateInput) {
+  async update(
+    id: string,
+    data: Prisma.OrderUpdateInput,
+    select: Prisma.OrderSelect = this.queryBuilder.buildSelectQuery(),
+  ) {
     const updated = await this.dbService.order.update({
       where: { id },
       data,
-      include: {
-        orderItems: true,
-      },
+      select,
     });
     return updated;
   }
 
-  // Soft delete isn't explicitly defined in Prisma schema like User,
-  // Using direct delete or an implementation-specific delete
   async delete(id: string) {
     return await this.dbService.order.delete({
       where: { id },
@@ -59,7 +61,7 @@ export class OrderRepository {
       skip,
       take: limit,
       select,
-      orderBy: { createdAt: 'desc' }, // Good practice for orders
+      orderBy: { createdAt: 'desc' },
     });
     return entries;
   }
