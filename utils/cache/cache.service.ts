@@ -83,12 +83,17 @@ export class CacheService implements OnModuleDestroy, OnModuleInit {
       await this.redis.set(`${this.DEFAULT_CACHE_PREFIX}-${key}`, val);
     }
   }
-
-  async setAdd(key: string, value: string[]) {
+  async setAdd(key: string, value: string[], ttlSeconds?: number) {
     if (!this.enabled || !value.length) return;
+
     const fullKey = `${this.DEFAULT_CACHE_PREFIX}-${key}`;
+
     await this.redis.del(fullKey);
     await this.redis.sadd(fullKey, ...value);
+
+    if (ttlSeconds) {
+      await this.redis.expire(fullKey, ttlSeconds);
+    }
   }
 
   async getMembers(key: string) {

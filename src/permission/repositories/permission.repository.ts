@@ -20,23 +20,35 @@ export class PermissionRepository {
   }
 
   async getPermissionKeysByRole(role: string[]) {
-    const cache = await this.cache.getMembers(
+    let permissionKeys: string[] = [];
+    const cached = await this.cache.getMembers(
       `permission:role:${role.join(',')}`,
     );
-    if (cache && cache.length > 0) return cache;
-    const permissions = await this.db.permission.findMany({
-      where: {
-        rolePermissions: {
-          some: {
-            role: {
-              name: { in: role },
+    if (cached && cached.length > 0) {
+      return cached;
+    }
+    for (const r of role) {
+      const cache = await this.cache.getMembers(`permission:role:${r}`);
+      if (cache && cache.length > 0) {
+        permissionKeys = [...permissionKeys, ...cache];
+        continue;
+      }
+      const permissions = await this.db.permission.findMany({
+        where: {
+          rolePermissions: {
+            some: {
+              role: {
+                name: r,
+              },
             },
           },
         },
-      },
-      select: { key: true },
-    });
-    const permissionKeys = permissions.map((p) => p.key);
+        select: { key: true },
+      });
+      const permissionKeysDB = permissions.map((p) => p.key);
+      await this.cache.setAdd(`permission:role:${r}`, permissionKeysDB, 60);
+      permissionKeys = [...permissionKeys, ...permissionKeysDB];
+    }
     await this.cache.setAdd(
       `permission:role:${role.join(',')}`,
       permissionKeys,

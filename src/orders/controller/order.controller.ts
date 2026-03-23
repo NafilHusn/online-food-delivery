@@ -45,8 +45,8 @@ export class OrderController {
 
   @Put()
   @UpdatedResponse()
-  @PermissionGuard(['order:update'])
   @FieldPermission(ORDER_FIELD_PERMISSIONS)
+  @PermissionGuard(['order:update'])
   @ProtectRoute()
   async update(@Body() dto: UpdateOrderDto) {
     return await this.service.updateOrder(dto);
