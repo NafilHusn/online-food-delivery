@@ -26,6 +26,10 @@ import { UpdatedResponse } from '../../../utils/decorators/UpdatedResponse';
 import type { RequestWithUser } from '../../auth/types/request-with-user';
 import { FieldPermission } from '../../permission/guards/field-permission.guard';
 import { ORDER_FIELD_PERMISSIONS } from '../constants/order.constants';
+import {
+  CountryScope,
+  WithCountryScope,
+} from '../../users/interceptors/country-scoper.interceptor';
 
 @Controller('order')
 export class OrderController {
@@ -50,9 +54,16 @@ export class OrderController {
 
   @Get()
   @ApiOkResponseWithData(OrderResponseDto, true)
+  @WithCountryScope()
   @PermissionGuard(['order:read'])
   @ProtectRoute()
-  async list(@Query() params: GetOrdersParamsDto) {
+  async list(
+    @Query() params: GetOrdersParamsDto,
+    @CountryScope() countryScope: string,
+  ) {
+    if (countryScope) {
+      params.country = countryScope;
+    }
     return await this.service.getAllOrders(params);
   }
 

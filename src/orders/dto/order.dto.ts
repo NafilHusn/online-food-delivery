@@ -64,6 +64,9 @@ export class GetOrdersParamsDto {
   @OptionalString()
   customerPhone?: string;
 
+  @OptionalString()
+  country?: string;
+
   @UUIDStringOptional()
   restaurantId?: string;
 

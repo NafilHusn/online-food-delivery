@@ -46,6 +46,9 @@ export class OrderQueryBuilder {
     if (params.paymentStatus) {
       where.paymentStatus = params.paymentStatus;
     }
+    if (params.country) {
+      where.restaurant = { country: params.country };
+    }
 
     if (params.fromDate || params.toDate) {
       where.createdAt = {};
