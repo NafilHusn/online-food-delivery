@@ -44,6 +44,11 @@ export class OrderService {
       throw new BadRequestException('Order must contain at least one item');
     }
 
+    await this.orderValidator.isItemRelatedToSameRestaurant(
+      params.orderItems,
+      params.restaurantId,
+    );
+
     const createInput = await this.queryBuilder.buildCreateQuery(
       params,
       userId,

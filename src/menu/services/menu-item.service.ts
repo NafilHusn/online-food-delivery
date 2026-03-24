@@ -11,6 +11,7 @@ import { MenuCategoryRepository } from '../repositories/menu-category.repository
 import type { IUploadService } from '../../../utils/file-upload/IUploadService';
 import { IUploadServiceToken } from '../../../utils/file-upload/IUploadService';
 import { ALLOWED_IMAGE_TYPES } from '../../../utils/file-upload/upload.constants';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class MenuItemService {
@@ -92,5 +93,9 @@ export class MenuItemService {
 
     await this.itemRepo.delete(id);
     return { deleted: true };
+  }
+
+  async findAll(where: Prisma.MenuItemsWhereInput) {
+    return await this.itemRepo.findMany(where);
   }
 }
