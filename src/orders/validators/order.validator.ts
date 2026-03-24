@@ -6,12 +6,15 @@ import {
 import { OrderRepository } from '../repositories/order.repository';
 import { RestaurantService } from '../../restaurant/services/restaurant.service';
 import { OrderStatus } from '@prisma/client';
+import { OrderItemDto } from '../dto/order.dto';
+import { MenuItemService } from '../../menu/services/menu-item.service';
 
 @Injectable()
 export class OrderValidator {
   constructor(
     private readonly orderRepo: OrderRepository,
     private readonly restaurantService: RestaurantService,
+    private readonly menuItemService: MenuItemService,
   ) {}
 
   async isRestaurantExist(id: string) {
@@ -39,5 +42,23 @@ export class OrderValidator {
       throw new BadRequestException('Order is not editable');
     }
     return order;
+  }
+
+  async isItemRelatedToSameRestaurant(
+    items: OrderItemDto[],
+    restaurantId: string,
+  ) {
+    const menuItems = await this.menuItemService.findAll({
+      id: { in: items.map((item) => item.menuItemId) },
+      category: {
+        restaurant: { id: restaurantId },
+      },
+    });
+    if (menuItems.length !== items.length) {
+      throw new BadRequestException(
+        'All menu items must belong to the same restaurant',
+      );
+    }
+    return menuItems;
   }
 }

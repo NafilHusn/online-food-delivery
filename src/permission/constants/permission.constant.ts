@@ -92,7 +92,7 @@ export const CURRENT_PERMISSIONS = [
       {
         key: 'menu-item:create',
         action: 'CREATE',
-        assignedRoles: [Roles.ADMIN, Roles.SUPER_ADMIN],
+        assignedRoles: [Roles.ADMIN, Roles.SUPER_ADMIN, Roles.MANAGER],
       },
       {
         key: 'menu-item:read',
